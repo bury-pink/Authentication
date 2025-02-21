@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
+import path from 'path';
+
 import connectDB from './database/connectDB.js';
 
 import authRoutes from './routes/auth.js';
@@ -20,7 +22,16 @@ app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 app.use(morgan('common'));
 app.use(cookieParser());
 
+app.use(express.static(
+    path.resolve(__dirname, '../dist'),
+    { maxAge: '1y', tag: false }
+))
+
 app.use('/api/auth', authRoutes);
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
